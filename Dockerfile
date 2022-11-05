@@ -1,17 +1,23 @@
-FROM golang:1.18 AS build
+FROM golang:1.16.0-alpine3.13 AS build
+
+LABEL maintainer="Reinaldo Saraiva do Carmo"
+LABEL email="reinaldo.saraiva@gmail.com"
+LABEL licence="GPLv3"
+
+ENV CGO_ENABLED=0 \
+    GOOS=linux
 
 WORKDIR /app
 
 COPY . /app
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o api main.go
 
-FROM scratch
+RUN go build -o main main.go
+
+from scratch
 
 WORKDIR /app
 
-COPY --from=build /app/api ./
+COPY --from=build /app/main ./
 
-EXPOSE 38000
-
-CMD ["./api"]
+CMD ["./main"]
